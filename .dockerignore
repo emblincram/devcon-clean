@@ -1,0 +1,30 @@
+# Node.js/Python/C++ Build-Dateien und Abhängigkeiten
+node_modules/
+__pycache__/
+*.o
+*.a
+*.so
+*.dll
+*.exe
+
+# Git- und Editor-Dateien
+.git/
+.gitignore
+.idea/
+.vscode/
+*.swp
+
+# Log-Dateien & temporäre Dateien
+*.log
+*.tmp
+*.bak
+
+# Sensible Dateien (z. B. Konfigs mit API-Keys)
+.env
+secrets/
+config.yml
+
+# Projektspezifische Angaben
+**/build
+**/.cache
+**/*.core*

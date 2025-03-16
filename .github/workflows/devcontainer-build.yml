@@ -1,0 +1,47 @@
+name: Build & Push Docker Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      trigger:
+        description: "start manually"
+        required: true
+        default: "yes"
+
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        run: |
+          echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin || exit 1
+
+      - name: Set DATE_TAG
+        run: echo "DATE_TAG=$(date +%Y%m%d-%H%M)" >> $GITHUB_ENV
+
+      - name: Build Docker Image
+        run: |
+          docker build --cache-from=ghcr.io/${{ github.repository }}:latest \
+                      -t ghcr.io/${{ github.repository }}:latest \
+                      -t ghcr.io/${{ github.repository }}:$DATE_TAG \
+                      -f .devcontainer/Dockerfile .
+
+      - name: Push Docker Image
+        run: |
+          docker push ghcr.io/${{ github.repository }}:latest
+          docker push ghcr.io/${{ github.repository }}:$DATE_TAG
